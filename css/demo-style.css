@@ -29,6 +29,7 @@ main {
 h1 {
   font-size: 2em;
   margin: 0.4em;
+  margin-bottom: 0.8em;
   color: #ef866b;
 }
 
@@ -44,6 +45,11 @@ h3 {
   margin: 0 auto;
   color: #f7d76b;
   margin-top: 0.8em;
+}
+
+p{
+  line-height: 1.6em;
+  margin: 0.4em;
 }
 
 .marker {
@@ -227,6 +233,11 @@ div#custom {
 
 select[id^="custom"] {
   font-size: 0.6em;
+}
+/* child Event */
+#childEvent__trigger{
+  margin-top: 1.2em;
+  margin-bottom: 0.8em;
 }
 
 /* chat用のデザイン */

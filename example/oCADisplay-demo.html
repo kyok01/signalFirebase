@@ -15,6 +15,7 @@
     </header>
     <main>
       <h1>oCADisplay Method Demo</h1>
+      <p>oCADisplay is mainly made of onChildAdded function.<br>You can customize when it works.</p>
       <h2>Output</h2>
       <div id="output">
         <table>
@@ -36,6 +37,7 @@
         <pre
           class="prettyprint"
         ><code>sg("xxxxx").oCADisplay(mainFunc, onLoadBool, RealTimeBool);</code></pre>
+        <p>oCADisplay is mainly made of onChildAdded function.<br>You can customize when it works.</p>
         <h3>Parameters</h3>
         <table>
           <thead>
@@ -79,7 +81,7 @@
           </tbody>
         </table>
       </div>
-      <h2>Customize And Execute</h2>
+      <h2>Change Parameters and Execute</h2>
       <div id="custom">
         <div id="custom__df">
           <div>sg("xxxxx").oCADisplay(</div>
@@ -114,8 +116,22 @@
           </div>
           <div>);</div>
         </div>
+        <button id="custom__execute">Reload and Execute!!</button>
       </div>
-      <button id="execute">Execute and scroll to top!!</button>
+      <h2>Trigger Child Event</h2>
+      <div id="childEvent">
+        <p>
+          If you push the trigger button below, you execute this code.You will
+          add a childData.<br />(Automatically remove the childData in 3
+          seconds.)
+        </p>
+        <pre
+          class="prettyprint"
+        ><code>set(ref(db, 'chat/-N2qurrOFc4woZCUOK8T'), {uname:"Mia", age:28, text:"Good night!", deleteFrag:false});<br>//-N2qurrOFc4woZCUOK8T is randam number, usually mede by push function</code></pre>
+        <button id="childEvent__trigger">
+          Trigger Child Event and Watch What happens!!
+        </button>
+      </div>
     </main>
     <footer>
       <div>Copyright (c) 2022 Kazutaka.Yokoi</div>
@@ -185,8 +201,13 @@
       let oCADisplayRealTimeBool;
 
       oCADisplayMainFunc = localStorage.getItem("oCADisplayMainFunc");
-      oCADisplayOnLoadBool = localStorage.getItem("oCADisplayMainFunc");
-      oCADisplayRealTimeBool = localStorage.getItem("oCADisplayMainFunc");
+      oCADisplayOnLoadBool = localStorage.getItem("oCADisplayOnLoadBool");
+      oCADisplayRealTimeBool = localStorage.getItem("oCADisplayRealTimeBool");
+
+      // functions
+      $(function () {
+        $("html,body").animate({ scrollTop: 0 }, "0.5");
+      });
 
       const appendDemo = function (data) {
         $("#output__tbody").append(
@@ -202,6 +223,12 @@
             data.val().age
           }</td><td>${data.val().text}</td></tr>`
         );
+      };
+
+      const wait = (sec) => {
+        return new Promise((resolve, reject) => {
+          setTimeout(resolve, sec * 1000);
+        });
       };
 
       if (
@@ -220,18 +247,89 @@
             "};<br>" +
             'sg("chat").oCADisplay(appendDemo, true, true);</code></pre>'
         );
+      } else if (oCADisplayMainFunc == "appendDemo") {
+        console.log("append");
+        console.log(Boolean(Number(oCADisplayOnLoadBool)));
+        console.log(Boolean(Number(oCADisplayRealTimeBool)));
+        sg("chat").oCADisplay(
+          appendDemo,
+          Boolean(Number(oCADisplayOnLoadBool)),
+          Boolean(Number(oCADisplayRealTimeBool))
+        );
+        $("#code").html(
+          '<pre class="prettyprint"><code>' +
+            "const appendDemo = function (data) {<br>" +
+            ' $("#output__tbody").append(<br>' +
+            "  &lt;tr&gt;&lt;td&gt;${data.key}&lt;\/td&gt;&lt;td>${data.val().uname}&lt;\/td&gt;&lt;td&gt;${data.val().age}&lt;\/td>&lt;td&gt;${data.val().text}&lt;\/td&gt;&lt;\/tr&gt;<br>" +
+            " );<br>" +
+            "};<br>" +
+            `sg("chat").oCADisplay(appendDemo, ${Boolean(
+              Number(oCADisplayOnLoadBool)
+            )}, ${Boolean(Number(oCADisplayRealTimeBool))});</code></pre>`
+        );
+        clearLocalStorage();
+      } else if (oCADisplayMainFunc == "prependDemo") {
+        console.log("preppend");
+        sg("chat").oCADisplay(
+          prependDemo,
+          Boolean(Number(oCADisplayOnLoadBool)),
+          Boolean(Number(oCADisplayRealTimeBool))
+        );
+        $("#code").html(
+          '<pre class="prettyprint"><code>' +
+            "const appendDemo = function (data) {<br>" +
+            ' $("#output__tbody").prepend(<br>' +
+            "  &lt;tr&gt;&lt;td&gt;${data.key}&lt;\/td&gt;&lt;td>${data.val().uname}&lt;\/td&gt;&lt;td&gt;${data.val().age}&lt;\/td>&lt;td&gt;${data.val().text}&lt;\/td&gt;&lt;\/tr&gt;<br>" +
+            " );<br>" +
+            "};<br>" +
+            `sg("chat").oCADisplay(appendDemo, ${Boolean(
+              Number(oCADisplayOnLoadBool)
+            )}, ${Boolean(Number(oCADisplayRealTimeBool))});</code></pre>`
+        );
+        clearLocalStorage();
       }
 
-      $("#execute").on("click", function(){
+      $("#custom__execute").on("click", function () {
+        console.log($("#custom__mainFunc").val());
         console.log(
-        $("#custom__mainFunc").val()
+          $("#custom__onLoadBool").val(),
+          typeof $("#custom__onLoadBool").val()
         );
-        console.log(
+
+        console.log(Boolean(Number($("#custom__onLoadBool").val())));
+        localStorage.setItem(
+          "oCADisplayMainFunc",
+          $("#custom__mainFunc").val()
+        );
+        localStorage.setItem(
+          "oCADisplayOnLoadBool",
           $("#custom__onLoadBool").val()
         );
-        $("#custom__RealTimeBool").val()
+        localStorage.setItem(
+          "oCADisplayRealTimeBool",
+          $("#custom__RealTimeBool").val()
+        );
 
-      })
+        location.reload();
+      });
+
+      $("#childEvent__trigger").on("click", async function () {
+        set(ref(db, "chat/-N2qurrOFc4woZCUOK8T"), {
+          uname: "Mia",
+          age: 28,
+          text: "Good night!",
+          deleteFrag: false,
+        });
+        $("html,body").animate({ scrollTop: 0 }, "0.5");
+        await wait(3);
+        remove(ref(db, "chat/-N2qurrOFc4woZCUOK8T"));
+      });
+
+      function clearLocalStorage() {
+        localStorage.removeItem("oCADisplayMainFunc");
+        localStorage.removeItem("oCADisplayOnLoadBool");
+        localStorage.removeItem("oCADisplayRealTimeBool");
+      }
     </script>
   </body>
 </html>
