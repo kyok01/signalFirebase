@@ -1,18 +1,168 @@
+/* 基本配色はhttps://saruwakakun.com/design/gallery/palette */
+/* 親しみやすい色一番上 #EF866B #F7B46B #F7D76B #BCB5B5 */
+/* 基本的なパーツのデザイン */
+body {
+  font-size: 20px;
+  line-height: 2em;
+  font-family: "Arial", "メイリオ";
+  color: #bcb5b5;
+}
+
+header {
+  font-size: 1.6em;
+  display: flex;
+  justify-content: center;
+  padding: 0.8em;
+  background-color: #ef866b;
+  color: white;
+}
+
+main {
+  text-align: center;
+}
+
+h1 {
+  font-size: 2em;
+  margin: 0.4em;
+  color: #ef866b;
+}
+
+h2 {
+  font-size: 1.6em;
+  color: #ef866b;
+  margin-top: 0.8em;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin: 0 auto;
+  color: #f7d76b;
+  margin-top: 0.8em;
+}
+
+.marker {
+  background: linear-gradient(transparent 50%, #f7d76b 50%);
+}
+
+button {
+  background-color: #ef866b;
+  font-size: 0.8em;
+  border: none;
+  padding: 0.4em;
+  border-radius: 12px;
+  color: white;
+}
+
+button:hover {
+  background-color: #f7b46b;
+  font-size: 0.8em;
+  border: none;
+  padding: 0.4em;
+  border-radius: 12px;
+  color: white;
+}
+
+button.disabled {
+  background-color: #bcb5b5;
+}
+
+pre {
+  padding: 1.6em;
+  line-height: 1em;
+  text-align: left;
+  width: 80%;
+  margin: 0 auto;
+  overflow: auto;
+  resize: horizontal;
+}
+
+footer {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: #bcb5b5;
+  padding: 1.2em;
+}
+
+select {
+  font-size: 0.68em;
+}
+
+footer div {
+  line-height: 1.6em;
+}
+
+/* map用のデザイン */
+div#map {
+  width: 600px;
+  margin: 0 auto;
+  text-align: left;
+  border: 1px solid #f7d76b;
+  line-height: 1.2em;
+  font-size: 0.8em;
+  padding: 0.4em;
+}
+
 .map__df {
-    display: flex;
-    flex-flow: column;
-    justify-content: center;
-  }
-  /* dfはdisplay:flex;の略 */
-  
-  .map__keyAndVal {
-    margin-left: 24px;
-  }
-  
-  .map__leftmost {
-    margin-left: 4px;
-  }
-  
-  .map__left {
-    margin-left: 12px;
-  }
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+/* dfはdisplay:flex;の略 */
+
+.map__keyAndVal {
+  margin-left: 24px;
+}
+
+.map__leftmost {
+  margin-left: 8px;
+}
+
+.map__left {
+  margin-left: 24px;
+  margin-top: 0.4em;
+}
+
+div[id^="key"]:hover {
+  background-color: #f7d76b;
+}
+
+div.map__keyAndVal:hover {
+  background-color: #f7b46b;
+}
+
+/* functions内のデザイン */
+
+#functions {
+  margin: 0.4em;
+  padding: 0.4em;
+  width: 1200px;
+  margin: 0 auto;
+}
+
+#funcW {
+  width: 100%;
+}
+
+.funcR__tab {
+  margin-left: 12px;
+}
+
+.funcR__tabTab {
+  margin-left: 24px;
+}
+
+#funcR__select {
+  width: 800px;
+}
+
+/* chat用のデザイン */
+.chat__right {
+  text-align: right;
+}
+
+.chat__left {
+  text-align: left;
+}

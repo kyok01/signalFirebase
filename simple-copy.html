@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <title>Firebase:v9:Chatアプリのいろんなデータ操作方法</title>
+  </head>
+  <body>
+    <!-- コンテンツ表示画面 -->
+    <h1>Firebase:v9:Chatアプリのいろんなデータ操作方法</h1>
+    <div>
+      <div>入力エリア</div>
+      <div>名前：<input type="text" id="uname" /></div>
+      <div>年齢：<input type="number" id="age" /></div>
+      <div>
+        <textarea id="text" cols="30" rows="2"></textarea>
+        <button id="send">送信</button>
+        <button id="sendTestKey">テスト用の階層を作る(ただこのような階層はFirebase公式で推奨されていない)</button>
+      </div>
+      <div>削除エリア(削除したいkeyを入力してください)</div>
+      <div>
+        <textarea id="deleteKey" cols="30" rows="2"></textarea>
+        <button id="deletePhysical">物理削除</button>
+        <button id="deleteLogical">論理削除</button>
+      </div>
+      <div>編集エリア(編集したいkeyと名前、チャット内容を入力してください)</div>
+      <div>
+        key<textarea id="updateKey" cols="30" rows="2"></textarea> 名前<textarea
+          id="updateUName"
+          cols="30"
+          rows="2"
+        ></textarea>
+        チャット内容<textarea id="updateText" cols="30" rows="2"></textarea>
+        <button id="update">更新</button>
+      </div>
+      <h2>Realtime Databeseのマッピング</h2>
+      <div id="map"></div>
+      <div id="functions">
+        <h2>関数たち</h2>
+        <div>現在は<span id="functions__turn">書き込み</span>ターンです</div>
+        <!-- W=write 書き込み関数に関する個所 -->
+        <div id="funcW"> 
+          <h3>書き込みに関して</h3>
+          <div>
+            選択されたKeyもしくはValue：<span id="funcW__selectedData"></span>
+          </div>
+          <button id="funcW__showSet" disabled="true">選択されたKeyと同列にデータを足すための関数を表示する</button>
+          <button id="funcW__showUpdate" disabled="true">選択されたValueを更新するための関数</button>
+          <div>
+            選択された要素と同列にデータを足すための関数：<span id="funcW__setFunction"></span>
+          </div>
+          <div>
+            選択された要素を更新するための関数：<span id="funcW__updateFunction"></span>
+          </div>
+          <button id="funcW_moveToFuncR">書き込み変数段階を終わり、読み込み処理を選ぶ</button>
+        </div>
+        <div id="funcR">
+          <h3>読み込みに関して</h3>
+          <div>
+            DBに書き込んだタイミングで、どんなデータを読み込みたいか
+            <select id="funcR__select">
+            </select>
+            <button id="funcR__button">選択して読み込み用の関数を表示する</button>
+          </div>
+          <div id="funcR__showFunc">
+          </div>
+        </div>
+      </div>
+      <div
+        id="output"
+        style="
+          overflow: auto;
+          height: 500px;
+          width: 100%;
+          border: 1px solid black;
+        "
+      ></div>
+      ※名前をtaroにすると、右側に表示される仕様
+      <h3>ageRank</h3>
+    <div id="ageRank"></div>
+      <h3>ageRank2</h3>
+      <div id="ageRank2"></div>
+      <h3>textList</h3>
+      <div id="textList"></div>
+      <h3>oCADisplayTest</h3>
+      <div id="oCADisplayTest"></div>
+      <h3>sortChildDisplay</h3>
+      <div id="sortChildDisplay"></div>
+      <h3>sortChildDisplay降順</h3>
+      <div id="sortChildDisplayDesc"></div>
+      <h3>sortChildLineupWithNum</h3>
+      <div id="sortChildLineupWithNum"></div>
+      <h3>sortChildLineupWithNumデフォルト引数実験</h3>
+      <div id="sortChildLineupWithNumTest"></div>
+      <h3>mappingTest</h3>
+      <div id="mappingTest"></div>
+    </div>
+    <!--/ コンテンツ表示画面 -->
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- JQuery -->
+
+    <!--** 以下Firebase **-->
+    <script src="./js/main-copy.js" type="module"></script>
+  </body>
+</html>
