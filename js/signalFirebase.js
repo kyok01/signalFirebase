@@ -213,7 +213,7 @@ sg.prototype = {
   mapping: function(selector){
     onValue(this.path, (snapshot) => {
         //initialization
-        $("#mappingTest").html("");
+        $(selector).html("");
         let divDfArr = [];
         let divDf;
         //draw
