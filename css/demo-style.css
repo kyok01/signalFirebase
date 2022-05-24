@@ -250,6 +250,43 @@ select[id^="customML"] {
   margin-bottom: 0.8em;
 }
 
+/* Topページデザイン */
+/* demos */
+#demos {
+  display: flex;
+  justify-content: space-around;
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.demos__card{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2em;
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  font-size: 1.2em;
+  border-radius: 12px;
+}
+
+.demos__card:hover{
+  outline: #f7b46b 4px solid;
+}
+
+#demos__card1 {
+  background-image: url('../example/src/vintage-gaeb687f9d_640.jpg');
+}
+
+#demos__card2 {
+  background-image: url('../example/src/hawaii-mountain.jpg');
+}
+
+#demos__card3 {
+  background-image: url('../example/src/campfire-g8135781d2_640.jpg');
+}
+
 /* chat用のデザイン */
 .chat__right {
   text-align: right;
@@ -257,4 +294,5 @@ select[id^="customML"] {
 
 .chat__left {
   text-align: left;
+  justify-content: space-around;
 }

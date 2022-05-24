@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/demo-style.css" />
+    <link rel="stylesheet" href="./css/tomorrow-night.css" />
+    <title>signalFirebase</title>
+  </head>
+  <body>
+    <header>
+      <div>signalFirebase</div>
+    </header>
+    <main>
+      <h1>signalFirebase</h1>
+      <p>Just put the code below in your file!!<br>You can deal with Firebase Realtime Database easily.</p>
+      <pre class="prettyprint" style="text-align: center;"><code>import { sg } from "../js/signalFirebase.js";</code></pre>
+      <p></p>
+Now, signal fire is going up!!<br>Let's signal Firebase for your ideal application!!</p>
+      <h2>Demos</h2>
+      <div id="demos">
+        <div class="demos__card" id="demos__card1">
+          <div>mapping Demo</div>
+        </div>
+        <div class="demos__card" id="demos__card2">
+          <div>oCADisplay Demo</div>
+        </div>
+        <div class="demos__card" id="demos__card3">
+          <div>sCLWN Demo</div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div>Copyright (c) 2022 Kazutaka.Yokoi</div>
+      <div>Released under the MIT license</div>
+      <div>
+        <a href="https://opensource.org/licenses/MIT"
+          >https://opensource.org/licenses/MIT</a
+        >
+      </div>
+    </footer>
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- JQuery -->
+
+    <!--** 以下Firebase **-->
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        push,
+        set,
+        onChildAdded,
+        remove,
+        onChildRemoved,
+        update,
+        onChildChanged,
+        get,
+        child,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      import {
+        envapiKey,
+        envauthDomain,
+        envdatabaseURL,
+        envprojectId,
+        envstorageBucket,
+        envmessagingSenderId,
+        envappId,
+      } from "../js/env.js";
+
+      import { sg } from "../js/signalFirebase.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: envapiKey,
+        authDomain: envauthDomain,
+        databaseURL: envdatabaseURL,
+        projectId: envprojectId,
+        storageBucket: envstorageBucket,
+        messagingSenderId: envmessagingSenderId,
+        appId: envappId,
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      const dbRef = ref(db, "chat");
+
+      //Global variable
+      let selectedData; //クリック選択されたデータを格納するグローバル変数
+      let selectedDataKV; //Selected DataがKeyなのかKeyAndValueなのかを格納するグローバル変数
+      let turn = "write"; //writeもしくはreadを格納し、書き込み処理段階なのか読み込み処理段階なのかを管理する。初期値はwrite
+
+      sg("chat").mapping("#map");
+
+      // データのkeyがクリックされた場合のselectedDataへの格納
+      $("#map").on("click", '[id^="key"]', function () {
+        if (turn === "write") {
+          console.log("key含んだもの押せたよ");
+          let clickedHtml = $(this).attr("id");
+          clickedHtml = clickedHtml.slice(3); //頭の3文字(key)を削除する
+          console.log(clickedHtml);
+          $("#funcW__selectedData").html(clickedHtml + " (※Keyです)");
+          selectedData = $(this);
+          $("#funcW__showSet").attr("disabled", false);
+          $("#funcW__showSet").removeClass("disabled");
+          $("#funcW__showUpdate").attr("disabled", true);
+          $("#funcW__showUpdate").attr("class", "disabled");
+          selectedDataKV = "key";
+        } else {
+          alert("現在は書き込み処理についてではなく読み取り処理中です");
+        }
+      });
+
+      // データのJavascript値(keyAndValue)がクリックされた場合のselectedDataへの格納。親要素へのイベントバブリングを停止させている。
+      $("#map").on("click", ".map__keyAndVal", function (e) {
+        if (turn === "write") {
+          console.log($(this).html());
+          let clickedHtml = $(this).html();
+          clickedHtml = clickedHtml.replace(/<span>/g, "");
+          clickedHtml = clickedHtml.replace(/<\/span>/g, ""); //正規表現のエスケープ処理をしている
+          console.log(clickedHtml);
+          $("#funcW__selectedData").html(clickedHtml + " (※Valueです)");
+          selectedData = $(this);
+          console.log(selectedData.parent());
+          console.log(selectedData.parent().attr("id"));
+          $("#funcW__showSet").attr("disabled", true);
+          $("#funcW__showSet").attr("class", "disabled");
+          $("#funcW__showUpdate").attr("disabled", false);
+          $("#funcW__showUpdate").removeClass("disabled");
+          selectedDataKV = "keyAndVal";
+          e.stopPropagation(); //イベント伝播(バブリング)停止
+        } else {
+          alert("現在は書き込み処理についてではなく読み取り処理中です");
+        }
+      });
+
+      //ボタンを押したら、選択した要素を更新する関数を表示する処理
+      $("#funcW__showUpdate").on("click", function () {
+        if (turn === "write") {
+          // DBに書き込むPathを作成するための処理
+          makeParentList(selectedData, "map");
+          console.log(parentList);
+          let keyList = [];
+          parentList.forEach((ele) => {
+            console.log(ele.slice(0, 3));
+            if (ele.slice(0, 3) == "key") {
+              keyList.push(ele.slice(3));
+            }
+          });
+          console.log(keyList);
+          let path = "";
+          keyList.forEach((ele) => {
+            path = path + ele + "/";
+          });
+          console.log(path);
+          path = path.slice(0, -1); //末尾の"/"を削除
+          console.log(path);
+
+          //hashを生成するための処理
+          console.log(selectedData.find(".map__keyAndVal_key"));
+          console.log(selectedData.find(".map__keyAndVal_key").html());
+          const hashKey = selectedData.find(".map__keyAndVal_key").html();
+          $("#funcW__codeArea").html(
+            `<pre class="prettyprint"><code>update(ref(db, 'xxxxx/${path}'), {${hashKey}: "xxxxx"});</code></pre>`
+          );
+          $("#funcW_moveToFuncR").attr("disabled", false);
+          $("#funcW_moveToFuncR").removeClass("disabled");
+
+          $("#funcW__showUpdate").attr("disabled", true);
+          $("#funcW__showUpdate").class("disabled");
+        } else {
+          alert("現在は書き込み処理についてではなく読み取り処理中です");
+        }
+      });
+
+      let parentList = [];
+      function makeParentList(htmlEle, destinationId) {
+        if (htmlEle.parent().attr("id") !== destinationId) {
+          console.log(htmlEle.parent().attr("id"));
+          parentList.push(htmlEle.parent().attr("id"));
+          console.log("saiki");
+          console.log(parentList);
+          makeParentList(htmlEle.parent(), destinationId);
+        } else {
+          console.log(parentList);
+          console.log(htmlEle.parent().attr("id"));
+          console.log("end");
+          return;
+        }
+      }
+
+      //ボタンを押したら、要素を新たに書き込むset関数を呼び出す処理
+
+      $("#funcW__showSet").on("click", function () {
+        if (turn === "write") {
+          // DBに書き込むPathを作成するための処理
+          makeParentList(selectedData, "map");
+          console.log(parentList);
+          let keyList = [];
+          parentList.forEach((ele) => {
+            console.log(ele.slice(0, 3));
+            if (ele.slice(0, 3) == "key") {
+              keyList.push(ele.slice(3));
+            }
+          });
+          console.log(keyList);
+          let path = "";
+          keyList.forEach((ele) => {
+            path = path + ele + "/";
+          });
+          console.log(path);
+          //set関数を生成するための処理
+          $("#funcW__codeArea").html(
+            `<pre class="prettyprint"><code>dbRef = ref(db, 'xxxxx')<br>const newPostRef = push(dbRef); //ユニークKEYを生成<br>set(newPostRef, {xxxxx: "xxxxx"}); //任意のHash(Object, 連想配列をset)</code></pre>`
+          );
+          $("#funcW_moveToFuncR").attr("disabled", false);
+          $("#funcW_moveToFuncR").removeClass("disabled");
+
+          $("#funcW__showSet").attr("disabled", true);
+          $("#funcW__showSet").class("disabled");
+        } else {
+          alert("現在は書き込みターンではなく読み取りターンです");
+        }
+      });
+
+      $("#funcW_moveToFuncR").on("click", function () {
+        turn = "read";
+        $("#functions__turn").html("読み込み");
+        $("#funcR__button").attr("disabled", false);
+        $("#funcR__button").removeClass("disabled");
+        makeFunRSelecOption();
+        $("#funcW_moveToFuncR").attr("disabled", true);
+        $("#funcW_moveToFuncR").class("disabled");
+      });
+
+      function makeFunRSelecOption() {
+        if (selectedDataKV === "key") {
+          let h = '<option value="key__select">選択してください</option>';
+          h +=
+            '<option value="key__dataAdded1">新しく同列に足されたデータのみを読み込む(今後新しくページ読み込みされた際には同列のデータを全て表示する)</option>';
+          h +=
+            '<option value="key__dataAdded2">新しく同列に足されたデータのみを読み込む(今後新しくページ読み込みされた際にも、都度追加されたデータのみを表示する)</option>';
+          h +=
+            '<option value="key__sameDirData">同列のデータを全て読み込む</option>';
+          $("#funcR__select").html(h);
+        }
+        if (selectedDataKV === "keyAndVal") {
+          let h = '<option value="kav__select">選択してください</option>';
+          h +=
+            '<option value="kav__dataUpdated">更新されたデータのみを読み込む</option>';
+          h +=
+            '<option value="kav__sameDirData">更新されたデータと同列のデータを全て読み込む</option>';
+          $("#funcR__select").html(h);
+        }
+      }
+
+      $("#funcR__button").on("click", function () {
+        console.log($("#funcR__select").val());
+        showFuncR();
+      });
+
+      function showFuncR() {
+        if (
+          $("#funcR__select").val() === "key__select" ||
+          $("#funcR__select").val() === "kav__select"
+        ) {
+          alert("選択してください");
+        }
+        //残り5パターンも記載する
+        if ($("#funcR__select").val() === "key__dataAdded1") {
+          let h =
+            '<pre class="prettyprint"><code><span>onChildAdded(ref(db, "chat"), function(data){</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">  console.log(data);  //datasnapshot形式で返ってくる</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">  console.log(data.key);  //追加されたDataのkeyが返ってくる(ex. -N2UnKkhdOTOXGK4AUVp)</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">  console.log(data.val()); //hash形式でデータが返ってくる</span>';
+          h += "<br>";
+          h += "<span>});</span></code></pre>";
+          $("#funcR__showFunc").html(h);
+        }
+        if ($("#funcR__select").val() === "key__dataAdded2") {
+          let h =
+            '<pre class="prettyprint"><code><span>onChildAdded(ref(db, "chat"), function(data){</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">if(oCABool){</span> //oCABoolはonChildAdded boolの略';
+          h +=
+            '<span class="funcR__tabTab">  console.log(data);  //datasnapshot形式で返ってくる</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data.key);  //追加されたDataのkeyが返ってくる(ex. -N2UnKkhdOTOXGK4AUVp)</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data.val()); //hash形式でデータが返ってくる</span>';
+          h += "<br>";
+          h += '<span class="funcR__tab">}</span>';
+          h += "<br>";
+          h += "<span>});</span>";
+          h += "<br>";
+          h +=
+            "// ※事前に、let oCABool = false;をページ読み込みと同時に宣言しておき、child_addedイベントが発生する前にtrueに変えておく必要がある</code></pre>";
+          $("#funcR__showFunc").html(h);
+        }
+        if ($("#funcR__select").val() === "key__sameDirData") {
+          let h =
+            '<pre class="prettyprint"><code><span>onChildAdded(ref(db, "chat"), function(data){</span>';
+          h +=
+            '<span class="funcR__tab">onValue(ref(db, "chat"), function(snapshot){</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data);  //datasnapshot形式で返ってくる</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data.key);  //追加されたDataのkeyが返ってくる(ex. -N2UnKkhdOTOXGK4AUVp)</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data.val()); //hash形式でデータが返ってくる</span>';
+          h += "<br>";
+          h += '<span class="funcR__tab">});</span>';
+          h += "<span>});</span>";
+          h += "//※ちゃんと動くか確認が必要</code></pre>";
+          $("#funcR__showFunc").html(h);
+        }
+        if ($("#funcR__select").val() === "kav__dataUpdated") {
+          let h =
+            '<pre class="prettyprint"><code><span>onChildChanged(ref(db, "chat"), function(data){</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">  console.log(data);  //datasnapshot形式で返ってくる</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">  console.log(data.key);  //追加されたDataのkeyが返ってくる(ex. -N2UnKkhdOTOXGK4AUVp)</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tab">  console.log(data.val()); //hash形式でデータが返ってくる</span>';
+          h += "<br>";
+          h += "<span>});</span></code></pre>";
+          $("#funcR__showFunc").html(h);
+        }
+        if ($("#funcR__select").val() === "kav__sameDirData") {
+          let h =
+            '<pre class="prettyprint"><code><span>onChildChanged(ref(db, "chat"), function(data){</span>';
+          h +=
+            '<span class="funcR__tab">onChildAdded(ref(db, "chat"), function(data){</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data);  //datasnapshot形式で返ってくる</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data.key);  //追加されたDataのkeyが返ってくる(ex. -N2UnKkhdOTOXGK4AUVp)</span>';
+          h += "<br>";
+          h +=
+            '<span class="funcR__tabTab">  console.log(data.val()); //hash形式でデータが返ってくる</span>';
+          h += "<br>";
+          h += '<span class="funcR__tab">});</span>';
+          h += "<span>});</span>";
+          h += "//※ちゃんと動くか確認が必要</code></pre>";
+          $("#funcR__showFunc").html(h);
+        }
+      }
+    </script>
+  </body>
+</html>
