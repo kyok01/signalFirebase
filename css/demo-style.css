@@ -1,0 +1,18 @@
+.map__df {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+  }
+  /* dfはdisplay:flex;の略 */
+  
+  .map__keyAndVal {
+    margin-left: 24px;
+  }
+  
+  .map__leftmost {
+    margin-left: 4px;
+  }
+  
+  .map__left {
+    margin-left: 12px;
+  }
