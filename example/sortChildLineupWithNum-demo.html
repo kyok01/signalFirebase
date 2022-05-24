@@ -7,24 +7,26 @@
     <link rel="stylesheet" href="../css/reset.css" />
     <link rel="stylesheet" href="../css/demo-style.css" />
     <link rel="stylesheet" href="../css/tomorrow-night.css" />
-    <title>oCADisplay Method Demo</title>
+    <title>sortChildLineupWithNum Method Demo</title>
   </head>
   <body>
     <header>
       <div>signalFirebase</div>
     </header>
     <main>
-      <h1>oCADisplay Method Demo</h1>
-      <p>oCADisplay is mainly made of onChildAdded function.<br>You can customize when it works.</p>
+      <h1>sortChildLineupWithNum Method Demo</h1>
+      <p>
+        sortChildLineupWithNum is mainly made of onValue, query and
+        orderByChild<br />You can make rank table easily.
+      </p>
       <h2>Output</h2>
       <div id="output">
         <table>
           <thead>
             <tr>
-              <th>Chat ID</th>
+              <th>Rank</th>
               <th>User Name</th>
               <th>Age</th>
-              <th>Text</th>
             </tr>
           </thead>
           <tbody id="output__tbody"></tbody>
@@ -34,10 +36,18 @@
       <div id="code"></div>
       <h2>Reference</h2>
       <div id="reference">
-        <pre
-          class="prettyprint"
-        ><code>sg("xxxxx").oCADisplay(mainFunc, onLoadBool, RealTimeBool);</code></pre>
-        <p>oCADisplay is mainly made of onChildAdded function.<br>You can customize when it works.</p>
+        <pre class="prettyprint"><code>sg("xxxxx").(value,<br>
+          initFunc,<br>
+          mainFunc,<br>
+          order = "desc",<br>
+          tiedRankBool = true,<br>
+          onLoadBool = true,<br>
+          RealTimeBool = true<br>
+        );</code></pre>
+        <p>
+          sortChildLineupWithNum is mainly made of onValue, query and
+          orderByChild<br />You can make rank table easily.
+        </p>
         <h3>Parameters</h3>
         <table>
           <thead>
@@ -49,17 +59,49 @@
           </thead>
           <tbody>
             <tr>
-              <td>mainFunc</td>
+              <td>value</td>
+              <td>any</td>
+              <td>
+                You can order "xxxxx"'s childdata by this value.
+              </td>
+            </tr>
+            <tr>
+              <td>initFunc</td>
               <td>function</td>
               <td>
-                This function will be executed when oCADisplay method is
-                executed. This function must have only one parameter and this
-                has to be
+                This function will be executed first and once when value event
+                is triggered. This function must have only one parameter and
+                this has to be
                 <a
                   href="https://firebase.google.com/docs/reference/js/database.datasnapshot?authuser=0"
                   >DataSnapshot</a
                 >
-                class object
+                class object. This dataSnapshot is made of "xxxxx".
+              </td>
+            </tr>
+            <tr>
+              <td>mainFunc</td>
+              <td>function</td>
+              <td>
+                This function will be executed repeatly. This function must have
+                only three parameters, "xxxxx"'s childData key, "xxxxx"'s
+                childData value and rank number.
+              </td>
+            </tr>
+            <tr>
+              <td>order</td>
+              <td>string</td>
+              <td>
+                You can give rank each childdata by desc or asc. Initial value
+                is "desc".
+              </td>
+            </tr>
+            <tr>
+              <td>tiedRankBool</td>
+              <td>boolean</td>
+              <td>
+                If several data has the same value, you can choose to use tied
+                rank, or not. Initial value is true.
               </td>
             </tr>
             <tr>
@@ -67,7 +109,7 @@
               <td>boolean</td>
               <td>
                 You can decide whether you execute mainFunc when the page is
-                loaded.
+                loaded. Initial value is true.
               </td>
             </tr>
             <tr>
@@ -75,7 +117,7 @@
               <td>boolean</td>
               <td>
                 You can decide whether you execute mainFunc when Realtime
-                Database have child_added event.
+                Database have child_added event. Initial value is true.
               </td>
             </tr>
           </tbody>
@@ -83,32 +125,44 @@
       </div>
       <h2>Change Parameters and Execute</h2>
       <div id="custom">
-        <div id="custom__df">
-          <div>sg("chat").oCADisplay(</div>
-          <div>
-            <div>mainFunc,</div>
+        <div>
+          sg("chat").sortChildLineupWithNum(
+          <div id="custom__dfColum">
             <div>
-              <select name="" id="custom__mainFunc">
-                <option value="appendDemo">appendDemo</option>
-                <option value="prependDemo">prependDemo</option>
+              value,<select name="" id="customML__value">
+                <option value="age">age</option>
               </select>
             </div>
-          </div>
-          <div>
-            <div>onLoadBool,</div>
             <div>
-              <select name="" id="custom__onLoadBool">
+              initFunc,<select name="" id="customML__initFunc">
+                <option value="initFuncDemo">initFuncDemo</option>
+              </select>
+            </div>
+            <div>
+              mainFunc,<select name="" id="customML__mainFunc">
+                <option value="mainFuncDemo">mainFuncDemo</option>
+              </select>
+            </div>
+            <div>
+              order,<select name="" id="customML__order">
+                <option value="desc">"desc"</option>
+                <option value="asc">"asc"</option>
+              </select>
+            </div>
+            <div>
+              tiedRankBool,<select name="" id="customML__tiedRankBool">
                 <option value="1">true</option>
                 <option value="0">false</option>
               </select>
             </div>
-          </div>
-          <div>
             <div>
-              RealTimeBool
+              onLoadBool,<select name="" id="customML__onLoadBool">
+                <option value="1">true</option>
+                <option value="0">false</option>
+              </select>
             </div>
             <div>
-              <select name="" id="custom__RealTimeBool">
+              RealTimeBool,<select name="" id="customML__RealTimeBool">
                 <option value="1">true</option>
                 <option value="0">false</option>
               </select>
@@ -196,32 +250,26 @@
       const dbRef = ref(db, "chat");
 
       //Global variable
-      let oCADisplayMainFunc;
-      let oCADisplayOnLoadBool;
-      let oCADisplayRealTimeBool;
-
-      oCADisplayMainFunc = localStorage.getItem("oCADisplayMainFunc");
-      oCADisplayOnLoadBool = localStorage.getItem("oCADisplayOnLoadBool");
-      oCADisplayRealTimeBool = localStorage.getItem("oCADisplayRealTimeBool");
+      // sCLWNValue = localStorage.getItem("sCLWNValue");
+      // sCLWNInitFunc = localStorage.getItem("sCLWNInitFunc");
+      // sCLWNMainFunc = localStorage.getItem("sCLWNMainFunc");
+      let sCLWNOrder = localStorage.getItem("sCLWNOrder");
+      let sCLWNTiedRankBool = localStorage.getItem("sCLWNTiedRankBool");
+      let sCLWNOnLoadBool = localStorage.getItem("sCLWNOnLoadBool");
+      let sCLWNRealTimeBool = localStorage.getItem("sCLWNRealTimeBool");
 
       // functions
       $(function () {
         $("html,body").animate({ scrollTop: 0 }, "0.5");
       });
 
-      const appendDemo = function (data) {
-        $("#output__tbody").append(
-          `<tr><td>${data.key}</td><td>${data.val().uname}</td><td>${
-            data.val().age
-          }</td><td>${data.val().text}</td></tr>`
-        );
+      const initFuncDemo = function (snapshot) {
+        $("#output__tbody").html("");
       };
 
-      const prependDemo = function (data) {
-        $("#output__tbody").prepend(
-          `<tr><td>${data.key}</td><td>${data.val().uname}</td><td>${
-            data.val().age
-          }</td><td>${data.val().text}</td></tr>`
+      const mainFuncDemo = function (key, value, rankNum) {
+        $("#output__tbody").append(
+          `<tr><td>rank ${rankNum}</td><td>${value.uname}</td><td>${value.age} years old</td></tr>`
         );
       };
 
@@ -232,82 +280,57 @@
       };
 
       if (
-        oCADisplayMainFunc == null ||
-        oCADisplayOnLoadBool == null ||
-        oCADisplayRealTimeBool == null
+        sCLWNOrder == null ||
+        sCLWNTiedRankBool == null ||
+        sCLWNOnLoadBool == null ||
+        sCLWNRealTimeBool == null
       ) {
-        sg("chat").oCADisplay(appendDemo, true, true);
+        sg("chat").sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo);
         $("#code").html(
           '<pre class="prettyprint"><code>' +
-            "const appendDemo = function (data) {<br>" +
-            ' $("#output__tbody").append(<br>' +
-            // "  &lt;div&gt;${data.key}, ${data.val().uname}, ${data.val().age}, ${data.val().text}&lt;\/div&gt;<br>" +
-            "  &lt;tr&gt;&lt;td&gt;${data.key}&lt;\/td&gt;&lt;td&gt;${data.val().uname}&lt;\/td&gt;&lt;td&gt;${data.val().age}&lt;\/td>&lt;td&gt;${data.val().text}&lt;\/td&gt;&lt;\/tr&gt;<br>" +
-            " );<br>" +
+            "const initFuncDemo = function (snapshot) {<br>" +
+            '  $("#output__tbody").html("");<br>' +
             "};<br>" +
-            'sg("chat").oCADisplay(appendDemo, true, true);</code></pre>'
+            "const mainFuncDemo = function (key, value, rankNum) {<br>" +
+            '  $("#output__tbody").append(<br>' +
+            "    &lt;tr&gt;&lt;td&gt;rank ${rankNum}\&lt;\/td&gt;&lt;td&gt;${value.uname}&lt;\/td&gt;&lt;td&gt;${value.age} years old&lt;\/td&gt;&lt;\/tr&gt;<br>" +
+            "  );<br>" +
+            "};<br>" +
+            'sg("chat").sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo);</code></pre>'
         );
-      } else if (oCADisplayMainFunc == "appendDemo") {
-        console.log("append");
-        console.log(Boolean(Number(oCADisplayOnLoadBool)));
-        console.log(Boolean(Number(oCADisplayRealTimeBool)));
-        sg("chat").oCADisplay(
-          appendDemo,
-          Boolean(Number(oCADisplayOnLoadBool)),
-          Boolean(Number(oCADisplayRealTimeBool))
-        );
+      } else {
+        sg("chat").sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo, sCLWNOrder, Boolean(Number(sCLWNTiedRankBool)), Boolean(Number(sCLWNOnLoadBool)), Boolean(Number(sCLWNRealTimeBool)));
         $("#code").html(
           '<pre class="prettyprint"><code>' +
-            "const appendDemo = function (data) {<br>" +
-            ' $("#output__tbody").append(<br>' +
-            "  &lt;tr&gt;&lt;td&gt;${data.key}&lt;\/td&gt;&lt;td&gt;${data.val().uname}&lt;\/td&gt;&lt;td&gt;${data.val().age}&lt;\/td>&lt;td&gt;${data.val().text}&lt;\/td&gt;&lt;\/tr&gt;<br>" +
-            " );<br>" +
+            "const initFuncDemo = function (snapshot) {<br>" +
+            '  $("#output__tbody").html("");<br>' +
             "};<br>" +
-            `sg("chat").oCADisplay(appendDemo, ${Boolean(
-              Number(oCADisplayOnLoadBool)
-            )}, ${Boolean(Number(oCADisplayRealTimeBool))});</code></pre>`
-        );
-        clearLocalStorage();
-      } else if (oCADisplayMainFunc == "prependDemo") {
-        console.log("preppend");
-        sg("chat").oCADisplay(
-          prependDemo,
-          Boolean(Number(oCADisplayOnLoadBool)),
-          Boolean(Number(oCADisplayRealTimeBool))
-        );
-        $("#code").html(
-          '<pre class="prettyprint"><code>' +
-            "const appendDemo = function (data) {<br>" +
-            ' $("#output__tbody").prepend(<br>' +
-            "  &lt;tr&gt;&lt;td&gt;${data.key}&lt;\/td&gt;&lt;td>${data.val().uname}&lt;\/td&gt;&lt;td&gt;${data.val().age}&lt;\/td>&lt;td&gt;${data.val().text}&lt;\/td&gt;&lt;\/tr&gt;<br>" +
-            " );<br>" +
+            "const mainFuncDemo = function (key, value, rankNum) {<br>" +
+            '  $("#output__tbody").append(<br>' +
+            "    &lt;tr&gt;&lt;td&gt;rank ${rankNum}\&lt;\/td&gt;&lt;td&gt;${value.uname}&lt;\/td&gt;&lt;td&gt;${value.age} years old&lt;\/td&gt;&lt;\/tr&gt;<br>" +
+            "  );<br>" +
             "};<br>" +
-            `sg("chat").oCADisplay(appendDemo, ${Boolean(
-              Number(oCADisplayOnLoadBool)
-            )}, ${Boolean(Number(oCADisplayRealTimeBool))});</code></pre>`
+            `sg("chat").sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo, ${sCLWNOrder}, ${Boolean(Number(sCLWNTiedRankBool))}, ${Boolean(Number(sCLWNOnLoadBool))}, ${Boolean(Number(sCLWNRealTimeBool))});</code></pre>`
         );
         clearLocalStorage();
       }
-
       $("#custom__execute").on("click", function () {
-        console.log($("#custom__mainFunc").val());
-        console.log(
-          $("#custom__onLoadBool").val(),
-          typeof $("#custom__onLoadBool").val()
+        localStorage.setItem(
+          "sCLWNOrder",
+          $("#customML__order").val()
+        );
+        localStorage.setItem(
+          "sCLWNTiedRankBool",
+          $("#customML__tiedRankBool").val()
+        );
+        localStorage.setItem(
+          "sCLWNOnLoadBool",
+          $("#customML__onLoadBool").val()
         );
 
-        console.log(Boolean(Number($("#custom__onLoadBool").val())));
         localStorage.setItem(
-          "oCADisplayMainFunc",
-          $("#custom__mainFunc").val()
-        );
-        localStorage.setItem(
-          "oCADisplayOnLoadBool",
-          $("#custom__onLoadBool").val()
-        );
-        localStorage.setItem(
-          "oCADisplayRealTimeBool",
-          $("#custom__RealTimeBool").val()
+          "sCLWNRealTimeBool",
+          $("#customML__RealTimeBool").val()
         );
 
         location.reload();
@@ -326,9 +349,10 @@
       });
 
       function clearLocalStorage() {
-        localStorage.removeItem("oCADisplayMainFunc");
-        localStorage.removeItem("oCADisplayOnLoadBool");
-        localStorage.removeItem("oCADisplayRealTimeBool");
+        localStorage.removeItem("sCLWNOrder");
+        localStorage.removeItem("sCLWNTiedRankBool");
+        localStorage.removeItem("sCLWNOnLoadBool");
+        localStorage.removeItem("sCLWNRealTimeBool");
       }
     </script>
   </body>

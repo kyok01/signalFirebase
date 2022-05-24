@@ -231,8 +231,18 @@ div#custom {
   justify-content: center;
 }
 
+#custom__dfColum{
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
 select[id^="custom"] {
   font-size: 0.6em;
+}
+
+select[id^="customML"] {
+  margin-left: 0.4em;
 }
 /* child Event */
 #childEvent__trigger{
