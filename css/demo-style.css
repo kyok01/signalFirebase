@@ -1,6 +1,11 @@
 /* 基本配色はhttps://saruwakakun.com/design/gallery/palette */
 /* 親しみやすい色一番上 #EF866B #F7B46B #F7D76B #BCB5B5 */
 /* 基本的なパーツのデザイン */
+
+html{
+  scroll-behavior: smooth;
+}
+
 body {
   font-size: 20px;
   line-height: 2em;
@@ -31,6 +36,7 @@ h2 {
   font-size: 1.6em;
   color: #ef866b;
   margin-top: 0.8em;
+  margin-bottom: 0.4em;
 }
 
 h3 {
@@ -70,10 +76,11 @@ pre {
   padding: 1.6em;
   line-height: 1em;
   text-align: left;
-  width: 80%;
+  width: 800px;
   margin: 0 auto;
   overflow: auto;
   resize: horizontal;
+  border-radius: 12px;
 }
 
 footer {
@@ -94,7 +101,8 @@ footer div {
   line-height: 1.6em;
 }
 
-/* map用のデザイン */
+/* mapping-demo.html用のデザイン */
+/* map div用 */
 div#map {
   width: 600px;
   margin: 0 auto;
@@ -156,6 +164,69 @@ div.map__keyAndVal:hover {
 
 #funcR__select {
   width: 800px;
+}
+
+/* map以外のデモ用の汎用デザイン */
+/* output */
+#output table {
+  max-width: 800px;
+  text-align: left;
+  /* overflow-x: scroll; */
+  /* resize: horizontal; */
+  margin: 0 auto;
+  line-height: 1.6em;
+}
+#output td {
+  border: #f7d76b 1px solid;
+  padding: 0.4em;
+  /* white-space: nowrap; */
+}
+
+#output th {
+  background-color: #f7d76b;
+  border: #f7d76b 1px solid;
+  padding: 0.4em;
+}
+
+/* Executed Code */
+#code {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+/* Reference */
+#reference table {
+  max-width: 800px;
+  text-align: left;
+  /* overflow-x: scroll; */
+  /* resize: horizontal; */
+  margin: 0 auto;
+  line-height: 1.6em;
+}
+#reference td {
+  border: #f7d76b 1px solid;
+  padding: 0.4em;
+  /* white-space: nowrap; */
+}
+
+#reference th {
+  background-color: #f7d76b;
+  border: #f7d76b 1px solid;
+  padding: 0.4em;
+}
+
+/* custom内 */
+div#custom {
+  font-size: 1.2em;
+}
+
+#custom__df {
+  display: flex;
+  justify-content: center;
+}
+
+select[id^="custom"] {
+  font-size: 0.6em;
 }
 
 /* chat用のデザイン */

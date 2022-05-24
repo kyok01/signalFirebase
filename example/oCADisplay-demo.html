@@ -7,21 +7,115 @@
     <link rel="stylesheet" href="../css/reset.css" />
     <link rel="stylesheet" href="../css/demo-style.css" />
     <link rel="stylesheet" href="../css/tomorrow-night.css" />
-    <title>oCADisplay Demo</title>
+    <title>oCADisplay Method Demo</title>
   </head>
   <body>
     <header>
       <div>signalFirebase</div>
     </header>
     <main>
-      <h1>oCADisplay Demo</h1>
+      <h1>oCADisplay Method Demo</h1>
       <h2>Output</h2>
-      <div id="output"></div>
-      <h2>Code</h2>
+      <div id="output">
+        <table>
+          <thead>
+            <tr>
+              <th>Chat ID</th>
+              <th>User Name</th>
+              <th>Age</th>
+              <th>Text</th>
+            </tr>
+          </thead>
+          <tbody id="output__tbody"></tbody>
+        </table>
+      </div>
+      <h2>Executed Code</h2>
       <div id="code"></div>
-      <h2>Customize and execute</h2>
-      <div id="custom"></div>
-      <button id="execute">Execute!!</button>
+      <h2>Reference</h2>
+      <div id="reference">
+        <pre
+          class="prettyprint"
+        ><code>sg("xxxxx").oCADisplay(mainFunc, onLoadBool, RealTimeBool);</code></pre>
+        <h3>Parameters</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>mainFunc</td>
+              <td>function</td>
+              <td>
+                This function will be executed when oCADisplay method is
+                executed. This function must have only one parameter and this
+                has to be
+                <a
+                  href="https://firebase.google.com/docs/reference/js/database.datasnapshot?authuser=0"
+                  >DataSnapshot</a
+                >
+                class object
+              </td>
+            </tr>
+            <tr>
+              <td>onLoadBool</td>
+              <td>boolean</td>
+              <td>
+                You can decide whether you execute mainFunc when the page is
+                loaded.
+              </td>
+            </tr>
+            <tr>
+              <td>RealTimeBool</td>
+              <td>boolean</td>
+              <td>
+                You can decide whether you execute mainFunc when Realtime
+                Database have child_added event.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h2>Customize And Execute</h2>
+      <div id="custom">
+        <div id="custom__df">
+          <div>sg("xxxxx").oCADisplay(</div>
+          <div>
+            <div>mainFunc,</div>
+            <div>
+              <select name="" id="custom__mainFunc">
+                <option value="appendDemo">appendDemo</option>
+                <option value="prependDemo">prependDemo</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div>onLoadBool,</div>
+            <div>
+              <select name="" id="custom__onLoadBool">
+                <option value="1">true</option>
+                <option value="0">false</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div>
+              RealTimeBool
+            </div>
+            <div>
+              <select name="" id="custom__RealTimeBool">
+                <option value="1">true</option>
+                <option value="0">false</option>
+              </select>
+            </div>
+          </div>
+          <div>);</div>
+        </div>
+      </div>
+      <button id="execute">Execute and scroll to top!!</button>
     </main>
     <footer>
       <div>Copyright (c) 2022 Kazutaka.Yokoi</div>
@@ -95,11 +189,19 @@
       oCADisplayRealTimeBool = localStorage.getItem("oCADisplayMainFunc");
 
       const appendDemo = function (data) {
-        $("#output").append(`<div>${data.key}, ${data.val().uname}, ${data.val().age}, ${data.val().text}</div>`);
+        $("#output__tbody").append(
+          `<tr><td>${data.key}</td><td>${data.val().uname}</td><td>${
+            data.val().age
+          }</td><td>${data.val().text}</td></tr>`
+        );
       };
 
       const prependDemo = function (data) {
-        $("#output").append(`<div>${data.key}</div>`);
+        $("#output__tbody").prepend(
+          `<tr><td>${data.key}</td><td>${data.val().uname}</td><td>${
+            data.val().age
+          }</td><td>${data.val().text}</td></tr>`
+        );
       };
 
       if (
@@ -108,9 +210,28 @@
         oCADisplayRealTimeBool == null
       ) {
         sg("chat").oCADisplay(appendDemo, true, true);
-        $("#code").html(`sg("chat").oCADisplay(oCADisplayMainFunc, true, true);`);
-
+        $("#code").html(
+          '<pre class="prettyprint"><code>' +
+            "const appendDemo = function (data) {<br>" +
+            ' $("#output__tbody").append(<br>' +
+            // "  &lt;div&gt;${data.key}, ${data.val().uname}, ${data.val().age}, ${data.val().text}&lt;\/div&gt;<br>" +
+            "  &lt;tr&gt;&lt;td&gt;${data.key}&lt;\/td&gt;&lt;td>${data.val().uname}&lt;\/td&gt;&lt;td&gt;${data.val().age}&lt;\/td>&lt;td&gt;${data.val().text}&lt;\/td&gt;&lt;\/tr&gt;<br>" +
+            " );<br>" +
+            "};<br>" +
+            'sg("chat").oCADisplay(appendDemo, true, true);</code></pre>'
+        );
       }
+
+      $("#execute").on("click", function(){
+        console.log(
+        $("#custom__mainFunc").val()
+        );
+        console.log(
+          $("#custom__onLoadBool").val()
+        );
+        $("#custom__RealTimeBool").val()
+
+      })
     </script>
   </body>
 </html>
