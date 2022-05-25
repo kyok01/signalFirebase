@@ -22,6 +22,11 @@ header {
   color: white;
 }
 
+header a {
+  color : inherit;
+  text-decoration : none;
+}
+
 main {
   text-align: center;
 }
@@ -293,6 +298,20 @@ select[id^="customML"] {
 
 #demos__card3 {
   background-image: url('../example/src/campfire-g8135781d2_640.jpg');
+}
+
+/* aboutページ用のデザイン */
+#summary pre {
+  max-height: 400px;
+}
+
+.discription {
+  width: 800px;
+  margin: 0 auto;
+}
+
+.discription ul{
+  text-align: left;
 }
 
 /* chat用のデザイン */
