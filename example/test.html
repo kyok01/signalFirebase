@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/demo-style.css" />
+    <link rel="stylesheet" href="../css/tomorrow-night.css" />
+    <title>sortChildLineupWithNum Method Demo</title>
+  </head>
+  <body>
+    <header>
+      <a href="../index.html">
+        <div>signalFirebase</div>
+      </a>
+    </header>
+    <main>
+      <h1>sortChildLineupWithNum Method Demo</h1>
+      <p>
+        sortChildLineupWithNum is mainly made of onValue, query and
+        orderByChild<br />You can make rank table easily.
+      </p>
+      <h2>Output</h2>
+      <div id="output">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>User Name</th>
+              <th>Age</th>
+            </tr>
+          </thead>
+          <tbody id="output__tbody"></tbody>
+        </table>
+        </div>
+        <h2>Trigger Child Event(β)</h2>
+        <div id="childEvent">
+          <p>
+            If you push the trigger button below, you execute this code.You will
+            add a childData.<br />(Automatically remove the childData in 3
+            seconds.)
+          </p>
+          <pre
+            class="prettyprint"
+          ><code>set(ref(db, 'chat/-N2qurrOFc4woZCUOK8T'), {uname:"Mia", age:28, text:"Good night!", deleteFrag:false});<br>//-N2qurrOFc4woZCUOK8T is randam number, usually mede by push function</code></pre>
+          <button id="childEvent__trigger">
+            Trigger Child Event and Watch What happens!!
+          </button>
+        </div>
+        <footer></footer>
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- JQuery -->
+
+    <!--** 以下Firebase **-->
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        push,
+        set,
+        onChildAdded,
+        remove,
+        onChildRemoved,
+        update,
+        onChildChanged,
+        get,
+        child,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/9.8.1/firebase-database.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      import {
+        envapiKey,
+        envauthDomain,
+        envdatabaseURL,
+        envprojectId,
+        envstorageBucket,
+        envmessagingSenderId,
+        envappId,
+      } from "../js/env.js";
+
+      import { sg } from "../js/signalFirebase.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: envapiKey,
+        authDomain: envauthDomain,
+        databaseURL: envdatabaseURL,
+        projectId: envprojectId,
+        storageBucket: envstorageBucket,
+        messagingSenderId: envmessagingSenderId,
+        appId: envappId,
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      const dbRef = ref(db, "chat");
+
+
+      const wait = (sec) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, sec * 1000);
+  });
+};
+      // sg("chat").oCA(log);
+      //       const wait = (sec) => {
+      //   return new Promise((resolve, reject) => {
+      //     setTimeout(resolve, sec * 1000);
+      //   });
+      // };
+      //       function log (p) {
+      //         console.log(p);
+      //       }
+
+      //       async function test(){
+      //       await wait(1);
+      //       // tempBool = true;
+      //       console.log("3000");
+      //     }
+      //     test();
+
+      //       sg("chat").oCA(log).logData();
+
+      // let arr = [];
+      //       sg('chat').oCAPre(arr).oCAPost(arr);
+
+      // let dataSize;
+      const initFuncDemo = function (snapshot) {
+        $("#output__tbody").html("");
+      };
+
+      const mainFuncDemo = function (key, value) {
+        $("#output__tbody").append(
+          `<tr><td>${value.uname}</td><td>${value.age} years old</td></tr>`
+        );
+      };
+
+
+      let refRef = sg("chat");
+      $.when(
+      refRef.sortTest("age")
+      ).done(function(){
+        console.log(refRef);
+        refRef.sortLog();
+        refRef.sortLog().sortLog();
+        refRef.showSort(mainFuncDemo);
+      });
+
+      $("#childEvent__trigger").on("click", async function () {
+        set(ref(db, "chat/-N2qurrOFc4woZCUOK8T"), {
+          uname: "Mia",
+          age: 28,
+          text: "Good night!",
+          deleteFrag: false,
+        });
+        $("html,body").animate({ scrollTop: 0 }, "0.5");
+        // await wait(3);
+        // remove(ref(db, "chat/-N2qurrOFc4woZCUOK8T"));
+        // console.log("remove");
+      });
+      // refRef.sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo, "desc", true, false, true);
+    </script>
+  </body>
+</html>

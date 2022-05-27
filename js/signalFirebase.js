@@ -28,25 +28,25 @@ import {
 
 // if you make env.js and write environment variables there, please import.
 import {
-    envapiKey,
-    envauthDomain,
-    envdatabaseURL,
-    envprojectId,
-    envstorageBucket,
-    envmessagingSenderId,
-    envappId,
-  } from "./env.js";
+  envapiKey,
+  envauthDomain,
+  envdatabaseURL,
+  envprojectId,
+  envstorageBucket,
+  envmessagingSenderId,
+  envappId,
+} from "./env.js";
 
 // Your web app's Firebase configuration. import env, or write directly.
 const firebaseConfig = {
-    apiKey: envapiKey,
-    authDomain: envauthDomain,
-    databaseURL: envdatabaseURL,
-    projectId: envprojectId,
-    storageBucket: envstorageBucket,
-    messagingSenderId: envmessagingSenderId,
-    appId: envappId,
-  };
+  apiKey: envapiKey,
+  authDomain: envauthDomain,
+  databaseURL: envdatabaseURL,
+  projectId: envprojectId,
+  storageBucket: envstorageBucket,
+  messagingSenderId: envmessagingSenderId,
+  appId: envappId,
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -68,15 +68,86 @@ sg.prototype = {
   init: function (path) {
     this.dataArr = [];
     this.path = ref(db, path);
+    this.size = 0;
     return this;
   },
   oCA: function (func) {
-    let dataArrr = this.dataArr;
+    const aaa = this;
+    let dataArrr = aaa.dataArr;
+    let tempBool = false;
+
+    // const bbb =()=>{
+    //   console.log("bbb");
+    //   console.log(aaa);
+    //   // return aaa;
+    //   console.log(this);
+    //   return this;
+    // }
+    console.log(tempBool);
     onChildAdded(this.path, function (dataSnap) {
       dataArrr.push([dataSnap.key, dataSnap.val()]);
       func(dataSnap);
-      return this;
     });
+    // $.when(console.log("when")).done(function(){bbb()});
+    // if(tempBool){
+    //   console.log(this);
+    //   return this;
+    // }
+    // let num = 0;
+
+    // async function test() {
+    //   await wait(1);
+    //   num = 500;
+    //   tempBool = true;
+    //   console.log("3000");
+    // }
+    // test();
+
+    // console.log(tempBool);
+
+    // while (num < 300) {
+    //   console.log("false");
+    //   if (tempBool == true) {
+    //     console.log(this);
+    //     return this;
+    //   }
+    // }
+
+    // for(let i=0;i < 1000000000000000000000000000000000;i++){
+    //   if(){
+    //     console.log(i);
+    //     console.log(this);
+    //     return this;
+    //   }
+    // }
+  },
+
+  // logData: function () {
+  //   console.log("aaa");
+  //   let dataArrr = this.dataArr;
+  //   dataArrr.forEach((ele) => {
+  //     console.log(ele);
+  //     console.log("aaa");
+  //   });
+  // },
+
+  oCAPre: function (arr) {
+    onChildAdded(this.path, function (dataSnap) {
+      arr.push([dataSnap.key, dataSnap.val()]);
+    });
+    return this;
+  },
+
+  oCAPost: function (arr) {
+    this.dataArr = arr;
+    console.log(this);
+    return this;
+  },
+
+  logData: function () {
+    for (let i = 0; i < this.dataArr.length; i++) {
+      console.log(this.dataArr[i]);
+    }
   },
 
   oCADisplay: async function (mainFunc, onLoadBool, RealTimeBool) {
@@ -112,6 +183,80 @@ sg.prototype = {
       return this;
     });
   },
+
+  sortTest: async function (value) {
+    const sortRef = query(this.path, orderByChild(value)); //値が小さい順のものを生成する
+let temp = 0;
+let arr = this.dataArr;
+    onValue(sortRef, (snapshot) => {
+      temp = snapshot.size;
+      console.log(snapshot.size);
+      snapshot.forEach((childSnapshot) => {
+        arr.push([childSnapshot.key, childSnapshot.val()])
+      });
+    });
+    await wait(1);
+    this.size = temp;
+    console.log(this);
+    // console.log(dataSize);
+    // let i = 0;
+    // while (i < dataSize) {
+    //   i++;
+    //   console.log(i);
+    //   if (i == dataSize - 1) {
+    //     return this;
+    //   }
+    // }
+    // onValue(sortRef, (snapshot) => {
+    //   initFunc();
+    //   snapshot.forEach((childSnapshot) => {
+    //     mainFunc(childSnapshot);
+    //   });
+    //   return this;
+    // });
+  },
+
+  sortLog: function(){
+    let arr =this.dataArr;
+    console.log(arr);
+    arr.forEach((ele)=>{
+      console.log(ele);
+    });
+    return this;
+  },
+
+  changeShow: async function (
+    value,
+    initFunc,
+    mainFunc,
+    onLoadBool,
+    RealTimeBool
+  ) {
+    if (onLoadBool == false && RealTimeBool == false) {
+      alert("error");
+    } else {
+      const sortRef = query(this.path, orderByChild(value)); //make value ascending reference
+      onValue(sortRef, (snapshot) => {
+        if (onLoadBool) {
+          initFunc(snapshot);
+          snapshot.forEach((childSnapshot) => {
+            mainFunc(childSnapshot);
+          });
+          return this;
+        }
+      });
+      await wait(1); //not good coding way
+      if (onLoadBool == false && RealTimeBool == true) {
+        onLoadBool = true;
+      }
+      if (onLoadBool == true && RealTimeBool == false) {
+        onLoadBool = false;
+      }
+      // both onLoadBool and RealtimeBool are true, then nothing to code.
+    }
+  },
+
+  // sortTest 
 
   sortChildDisplay: async function (
     value,
@@ -210,64 +355,64 @@ sg.prototype = {
     }
   },
 
-  mapping: function(selector){
+  mapping: function (selector) {
     onValue(this.path, (snapshot) => {
-        //initialization
-        $(selector).html("");
-        let divDfArr = [];
-        let divDf;
-        //draw
-        drawDatarecursive(snapshot.val());
+      //initialization
+      $(selector).html("");
+      let divDfArr = [];
+      let divDf;
+      //draw
+      drawDatarecursive(snapshot.val());
 
-        function drawDatarecursive(obj) {
-            if (obj !== null && typeof obj === "object") {
-              for (const [key, value] of Object.entries(obj)) {
-                if (value !== null && typeof value === "object") {
-                  divDf = `df${key}`;
-                  uniqueElePush(divDfArr, divDf);
-                  $(selector).append(
-                    `<div id="key${key}"><span>${key}</span><div id="${divDf}" class="map__df"></div></div>` //dfはdisplay:flex;の略
-                  );
-                } else {
-                  $(`#${divDf}`).append(
-                    `<div class="map__keyAndVal"><span class="map__keyAndVal_key">${key}</span>:<span class="map__keyAndVal_val">${value}</span></div>`
-                  );
-                }
-                drawDatarecursive(value);
-              }
+      function drawDatarecursive(obj) {
+        if (obj !== null && typeof obj === "object") {
+          for (const [key, value] of Object.entries(obj)) {
+            if (value !== null && typeof value === "object") {
+              divDf = `df${key}`;
+              uniqueElePush(divDfArr, divDf);
+              $(selector).append(
+                `<div id="key${key}"><span>${key}</span><div id="${divDf}" class="map__df"></div></div>` //dfはdisplay:flex;の略
+              );
             } else {
-              giveDivDfClass();
-              return;
+              $(`#${divDf}`).append(
+                `<div class="map__keyAndVal"><span class="map__keyAndVal_key">${key}</span>:<span class="map__keyAndVal_val">${value}</span></div>`
+              );
             }
+            drawDatarecursive(value);
           }
-          
-          function giveDivDfClass() {
-            divDfArr.forEach((ele) => {
-              if ($(`#${ele}`).html() == "") {
-                $(`#${ele}`).attr("class", "map__leftmost");
-              } else {
-                $(`#key${ele.slice(2)}`).attr("class", "map__left");
-              }
-            });
+        } else {
+          giveDivDfClass();
+          return;
+        }
+      }
+
+      function giveDivDfClass() {
+        divDfArr.forEach((ele) => {
+          if ($(`#${ele}`).html() == "") {
+            $(`#${ele}`).attr("class", "map__leftmost");
+          } else {
+            $(`#key${ele.slice(2)}`).attr("class", "map__left");
           }
-          
-          // push unique element to array
-          function uniqueElePush(arr, ele) {
-            if (!arr.includes(ele)) {
-              arr.push(ele);
-              return;
-            } else {
-              ele = ele + "_";
-              uniqueElePush(arr, ele);
-            }
-          }
-          // uniqueElePush function demo
-          // let sampleArr = ["aaa", "bbb"];
-          // uniqueElePush(sampleArr, "aaa");
-          // console.log(sampleArr); // ["aaa", "bbb", "aaa_"]
-          // uniqueElePush(sampleArr, "aaa");
-          // console.log(sampleArr); // ["aaa", "bbb", "aaa_", "aaa__"]
-      }); 
+        });
+      }
+
+      // push unique element to array
+      function uniqueElePush(arr, ele) {
+        if (!arr.includes(ele)) {
+          arr.push(ele);
+          return;
+        } else {
+          ele = ele + "_";
+          uniqueElePush(arr, ele);
+        }
+      }
+      // uniqueElePush function demo
+      // let sampleArr = ["aaa", "bbb"];
+      // uniqueElePush(sampleArr, "aaa");
+      // console.log(sampleArr); // ["aaa", "bbb", "aaa_"]
+      // uniqueElePush(sampleArr, "aaa");
+      // console.log(sampleArr); // ["aaa", "bbb", "aaa_", "aaa__"]
+    });
   },
 };
 sg.prototype.init.prototype = sg.prototype;
