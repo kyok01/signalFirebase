@@ -225,6 +225,15 @@ let arr = this.dataArr;
     return this;
   },
 
+  sortShow: function(mainFunc) {
+    let arr =this.dataArr;
+    arr.forEach((ele)=>{
+      console.log(ele);
+      mainFunc(ele[0], ele[1]);
+    });
+    return this;
+  },
+
   changeShow: async function (
     value,
     initFunc,

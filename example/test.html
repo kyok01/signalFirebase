@@ -147,9 +147,9 @@
       refRef.sortTest("age")
       ).done(function(){
         console.log(refRef);
-        refRef.sortLog();
-        refRef.sortLog().sortLog();
-        refRef.showSort(mainFuncDemo);
+        // refRef.sortLog();
+        // refRef.sortLog().sortLog();
+        refRef.sortShow(mainFuncDemo).sortLog();
       });
 
       $("#childEvent__trigger").on("click", async function () {
@@ -164,7 +164,7 @@
         // remove(ref(db, "chat/-N2qurrOFc4woZCUOK8T"));
         // console.log("remove");
       });
-      // refRef.sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo, "desc", true, false, true);
+      refRef.sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo, "desc", true, false, true);
     </script>
   </body>
 </html>
