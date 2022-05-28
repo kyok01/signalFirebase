@@ -21,34 +21,46 @@
         sortChildLineupWithNum is mainly made of onValue, query and
         orderByChild<br />You can make rank table easily.
       </p>
-      <h2>Output</h2>
+      <h2>Output1</h2>
       <div id="output">
         <table>
           <thead>
             <tr>
-              <th>Rank</th>
               <th>User Name</th>
               <th>Age</th>
             </tr>
           </thead>
           <tbody id="output__tbody"></tbody>
         </table>
-        </div>
-        <h2>Trigger Child Event(β)</h2>
-        <div id="childEvent">
-          <p>
-            If you push the trigger button below, you execute this code.You will
-            add a childData.<br />(Automatically remove the childData in 3
-            seconds.)
-          </p>
-          <pre
-            class="prettyprint"
-          ><code>set(ref(db, 'chat/-N2qurrOFc4woZCUOK8T'), {uname:"Mia", age:28, text:"Good night!", deleteFrag:false});<br>//-N2qurrOFc4woZCUOK8T is randam number, usually mede by push function</code></pre>
-          <button id="childEvent__trigger">
-            Trigger Child Event and Watch What happens!!
-          </button>
-        </div>
-        <footer></footer>
+      </div>
+      <h2>Output2</h2>
+      <div id="output2">
+        <table>
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Age</th>
+            </tr>
+          </thead>
+          <tbody id="output2__tbody"></tbody>
+        </table>
+      </div>
+      <h2>Trigger Child Event(β)</h2>
+      <div id="childEvent">
+        <p>
+          If you push the trigger button below, you execute this code.You will
+          add a childData.<br />(Automatically remove the childData in 3
+          seconds.)
+        </p>
+        <pre
+          class="prettyprint"
+        ><code>set(ref(db, 'chat/-N2qurrOFc4woZCUOK8T'), {uname:"Mia", age:28, text:"Good night!", deleteFrag:false});<br>//-N2qurrOFc4woZCUOK8T is randam number, usually mede by push function</code></pre>
+        <button id="childEvent__trigger">
+          Trigger Child Event and Watch What happens!!
+        </button>
+      </div>
+    </main>
+    <footer></footer>
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- JQuery -->
@@ -102,12 +114,13 @@
       const db = getDatabase(app);
       const dbRef = ref(db, "chat");
 
+      let testbool = false;
 
       const wait = (sec) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, sec * 1000);
-  });
-};
+        return new Promise((resolve, reject) => {
+          setTimeout(resolve, sec * 1000);
+        });
+      };
       // sg("chat").oCA(log);
       //       const wait = (sec) => {
       //   return new Promise((resolve, reject) => {
@@ -141,15 +154,32 @@
         );
       };
 
+      const initFuncDemo2 = function () {
+        $("#output2__tbody").html("");
+      };
 
+      const mainFuncDemo2 = function (key, value) {
+        $("#output2__tbody").append(
+          `<tr><td>${value.uname}</td><td>${value.age} years old</td></tr>`
+        );
+      };
+
+      console.log(testbool);
+
+      const makeTrueOnLoad = function () {
+        testbool = true;
+      };
       let refRef = sg("chat");
-      $.when(
-      refRef.sortTest("age")
-      ).done(function(){
+      $.when(refRef.sortTest("age"),
+      refRef.showCustom(initFuncDemo2, mainFuncDemo2, testbool)
+      ).done(function () {
         console.log(refRef);
         // refRef.sortLog();
         // refRef.sortLog().sortLog();
         refRef.sortShow(mainFuncDemo).sortLog();
+        refRef.sortDesc("age").sortLog();
+        refRef.sortDesc("age").show(initFuncDemo2, mainFuncDemo2);
+        makeTrueOnLoad();
       });
 
       $("#childEvent__trigger").on("click", async function () {
@@ -160,11 +190,21 @@
           deleteFrag: false,
         });
         $("html,body").animate({ scrollTop: 0 }, "0.5");
-        // await wait(3);
-        // remove(ref(db, "chat/-N2qurrOFc4woZCUOK8T"));
-        // console.log("remove");
+        await wait(3);
+        remove(ref(db, "chat/-N2qurrOFc4woZCUOK8T"));
+        console.log("remove");
       });
-      refRef.sortChildLineupWithNum("age", initFuncDemo, mainFuncDemo, "desc", true, false, true);
+
+      // refRef.sortChildLineupWithNum(
+      //   "age",
+      //   initFuncDemo,
+      //   mainFuncDemo,
+      //   "asc",
+      //   true,
+      //   false,
+      //   true
+      // );
+
     </script>
   </body>
 </html>

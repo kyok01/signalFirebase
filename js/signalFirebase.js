@@ -150,6 +150,26 @@ sg.prototype = {
     }
   },
 
+  show: function (initFunc, mainFunc) {
+    let arr = this.dataArr;
+    initFunc();
+    arr.forEach((ele) => {
+      mainFunc(ele[0], ele[1]);
+    });
+  },
+
+  showCustom: function (initFunc, mainFunc,onLoadBool) {
+    console.log("if文前");
+    if(onLoadBool){
+      let arr = this.dataArr;
+      initFunc();
+      console.log("if文内");
+      arr.forEach((ele) => {
+        mainFunc(ele[0], ele[1]);
+      });
+    }
+  },
+
   oCADisplay: async function (mainFunc, onLoadBool, RealTimeBool) {
     let dataArrr = this.dataArr;
     if (onLoadBool == false && RealTimeBool == false) {
@@ -186,13 +206,13 @@ sg.prototype = {
 
   sortTest: async function (value) {
     const sortRef = query(this.path, orderByChild(value)); //値が小さい順のものを生成する
-let temp = 0;
-let arr = this.dataArr;
+    let temp = 0;
+    let arr = this.dataArr;
     onValue(sortRef, (snapshot) => {
       temp = snapshot.size;
       console.log(snapshot.size);
       snapshot.forEach((childSnapshot) => {
-        arr.push([childSnapshot.key, childSnapshot.val()])
+        arr.push([childSnapshot.key, childSnapshot.val()]);
       });
     });
     await wait(1);
@@ -216,18 +236,18 @@ let arr = this.dataArr;
     // });
   },
 
-  sortLog: function(){
-    let arr =this.dataArr;
+  sortLog: function () {
+    let arr = this.dataArr;
     console.log(arr);
-    arr.forEach((ele)=>{
+    arr.forEach((ele) => {
       console.log(ele);
     });
     return this;
   },
 
-  sortShow: function(mainFunc) {
-    let arr =this.dataArr;
-    arr.forEach((ele)=>{
+  sortShow: function (mainFunc) {
+    let arr = this.dataArr;
+    arr.forEach((ele) => {
       console.log(ele);
       mainFunc(ele[0], ele[1]);
     });
@@ -265,7 +285,7 @@ let arr = this.dataArr;
     }
   },
 
-  // sortTest 
+  // sortTest
 
   sortChildDisplay: async function (
     value,
@@ -362,6 +382,16 @@ let arr = this.dataArr;
         onLoadBool = false;
       }
     }
+  },
+  sortDesc: function (value) {
+    function compareFunc(a, b) {
+      return b[1][`${value}`] - a[1][`${value}`];
+    }
+    let arr = this.dataArr;
+    console.log(arr);
+    arr.sort(compareFunc);
+    console.log(this);
+    return this;
   },
 
   mapping: function (selector) {

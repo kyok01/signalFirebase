@@ -199,6 +199,26 @@ div.map__keyAndVal:hover {
   padding: 0.4em;
 }
 
+#output2 table {
+  max-width: 800px;
+  text-align: left;
+  /* overflow-x: scroll; */
+  /* resize: horizontal; */
+  margin: 0 auto;
+  line-height: 1.6em;
+}
+#output2 td {
+  border: #f7d76b 1px solid;
+  padding: 0.4em;
+  /* white-space: nowrap; */
+}
+
+#output2 th {
+  background-color: #f7d76b;
+  border: #f7d76b 1px solid;
+  padding: 0.4em;
+}
+
 /* Executed Code */
 #code {
   width: 1000px;
