@@ -204,7 +204,7 @@ sg.prototype = {
     });
   },
 
-  sortTest: async function (value) {
+  sortProp: async function (value) {
     const sortRef = query(this.path, orderByChild(value)); //値が小さい順のものを生成する
     let temp = 0;
     let arr = this.dataArr;

@@ -170,8 +170,8 @@
         testbool = true;
       };
       let refRef = sg("chat");
-      $.when(refRef.sortTest("age"),
-      refRef.showCustom(initFuncDemo2, mainFuncDemo2, testbool)
+      $.when(refRef.sortProp("age"),
+      // refRef.showCustom(initFuncDemo2, mainFuncDemo2, testbool)
       ).done(function () {
         console.log(refRef);
         // refRef.sortLog();
